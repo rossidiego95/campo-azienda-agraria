@@ -1,6 +1,6 @@
 # Campo — Gestione azienda agraria
 
-App web in italiano per organizzare appezzamenti, piano colturale, operazioni in campo, magazzino, prodotti fitosanitari, quaderno di campagna, registro di cantina e vendite.
+App web in italiano per organizzare appezzamenti, piano colturale, operazioni in campo, magazzino, prodotti fitosanitari, quaderno di campagna, registro di cantina, vendite, prodotti aziendali e attrezzature.
 
 ## Avvio e accesso
 
@@ -17,6 +17,14 @@ Supabase Free ha limiti e non offre backup automatici scaricabili: conserva peri
 ## Vendite
 
 La sezione Vendite registra data, cliente, prodotto, quantità, unità, prezzo unitario, totale calcolato, stato dell'incasso e note. I dati sono filtrati per campagna, esportabili in CSV e inclusi nell'archivio JSON. Per aggiornare un progetto Supabase già esistente, esegui una sola volta `001_add_sales.sql` nel SQL Editor del progetto.
+
+## Prodotti e attrezzature
+
+La sezione **Prodotti aziendali** registra i lotti raccolti, l’appezzamento di origine e le attività/trattamenti del quaderno collegati a quell’appezzamento. Per associare trattamenti futuri, seleziona l’appezzamento quando inserisci una voce nel quaderno di campagna o nel registro fitosanitari. In fase di registrazione puoi anche caricare il prodotto nel magazzino.
+
+La sezione **Attrezzature** conserva il parco macchine e lo storico degli interventi. Nella manutenzione puoi indicare più prodotti/ricambi dal magazzino; l’app registra gli scarichi e rifiuta l’operazione se la giacenza risulta insufficiente.
+
+Per aggiornare un progetto Supabase esistente, esegui una sola volta `002_products_equipment.sql` nel SQL Editor del progetto dopo la migrazione `001_add_sales.sql`.
 
 ## Ambito
 
