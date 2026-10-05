@@ -1,17 +1,23 @@
 # Campo — Gestione azienda agraria
 
-App per gestire appezzamenti, piano colturale, operazioni, magazzino, prodotti fitosanitari, quaderno di campagna e registro di cantina.
+App web in italiano per organizzare appezzamenti, piano colturale, operazioni in campo, magazzino, prodotti fitosanitari, quaderno di campagna, registro di cantina e vendite.
 
 ## Avvio e accesso
 
-Apri `index.html` con un browser collegato a Internet e accedi con l'email e la password dell'utente creato nel progetto Supabase. Al primo accesso l'app crea l'azienda e la campagna 2026/2027. Puoi modificarle da **Azienda e campagne**.
+Apri `index.html` con un browser collegato a Internet. La prima volta accedi con l'indirizzo email e la password dell'utente creato nel progetto Supabase. Le schermate usano il database online; non condividere la password.
 
-## Archivio e copie dei dati
+Al primo accesso l'app crea una scheda azienda e la campagna 2026/2027. Puoi cambiare il nome dell'azienda e la campagna attiva da **Azienda e campagne**.
 
-I dati sono salvati nel database Supabase; le tabelle sono protette da regole di accesso per l'utente proprietario. Puoi scaricare l'archivio della campagna in JSON e ogni singolo registro in CSV. Conserva le copie esportate fuori dal progetto: il piano gratuito ha limiti e non offre backup automatici scaricabili.
+## Dati e backup
 
-La chiave publishable configurata nell'app è pensata per l'uso nel browser; non usare mai la chiave segreta o `service_role`.
+I dati sono archiviati nel progetto Supabase configurato per questa app. Il file `supabase-schema.sql` contiene lo schema applicato al database e le regole di accesso. Il tasto **Esporta archivio** scarica una copia JSON dei dati della campagna selezionata; i registri hanno anche esportazione CSV.
 
-## Nota
+Supabase Free ha limiti e non offre backup automatici scaricabili: conserva periodicamente copie esportate fuori dal progetto. La chiave publishable usata nel browser non è la chiave segreta; tutte le tabelle sono protette da Row Level Security.
 
-Questi registri sono strumenti gestionali: non sostituiscono documenti ufficiali e non verificano gli obblighi normativi.
+## Vendite
+
+La sezione Vendite registra data, cliente, prodotto, quantità, unità, prezzo unitario, totale calcolato, stato dell'incasso e note. I dati sono filtrati per campagna, esportabili in CSV e inclusi nell'archivio JSON. Per aggiornare un progetto Supabase già esistente, esegui una sola volta `001_add_sales.sql` nel SQL Editor del progetto.
+
+## Ambito
+
+Le registrazioni dell'app sono strumenti di gestione e non sostituiscono i registri ufficiali né verificano gli obblighi normativi. Prima di usarle in azienda, controlla che i campi e i processi soddisfino le regole applicabili.
