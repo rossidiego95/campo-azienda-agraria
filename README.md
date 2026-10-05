@@ -1,30 +1,17 @@
 # Campo — Gestione azienda agraria
 
-Prototipo web in italiano per organizzare in un unico posto:
+App per gestire appezzamenti, piano colturale, operazioni, magazzino, prodotti fitosanitari, quaderno di campagna e registro di cantina.
 
-- magazzino e movimenti;
-- prodotti fitosanitari e relative scadenze;
-- appezzamenti con coltura, superficie e riferimento;
-- piano colturale per campagna e appezzamento;
-- programmazione delle operazioni in campo;
-- quaderno di campagna;
-- registro di cantina.
+## Avvio e accesso
 
-## Aprire il prototipo
+Apri `index.html` con un browser collegato a Internet e accedi con l'email e la password dell'utente creato nel progetto Supabase. Al primo accesso l'app crea l'azienda e la campagna 2026/2027. Puoi modificarle da **Azienda e campagne**.
 
-Apri `index.html` con un browser. Non richiede installazioni.
+## Archivio e copie dei dati
 
-Nella sezione **Appezzamenti**, inserisci nome, coltura, superficie in ettari ed eventuali riferimenti o note, quindi seleziona **Salva appezzamento**. Puoi rimuovere una voce dall’elenco.
+I dati sono salvati nel database Supabase; le tabelle sono protette da regole di accesso per l'utente proprietario. Puoi scaricare l'archivio della campagna in JSON e ogni singolo registro in CSV. Conserva le copie esportate fuori dal progetto: il piano gratuito ha limiti e non offre backup automatici scaricabili.
 
-Nel **Piano colturale**, aggiungi campagna, appezzamento, coltura e superficie prevista. In **Programmazione operazioni** inserisci data, appezzamento e lavorazione; quando l’attività è svolta puoi segnarla come completata.
+La chiave publishable configurata nell'app è pensata per l'uso nel browser; non usare mai la chiave segreta o `service_role`.
 
-## Stato attuale
+## Nota
 
-Questa versione contiene dati dimostrativi. Appezzamenti, piano colturale e operazioni programmate sono conservati solo nel browser e dispositivo in uso; non sono condivisi tra dispositivi e non esiste ancora un backup. La superficie viene inserita manualmente. Non è ancora collegata a un archivio condiviso, non gestisce utenti e non sostituisce registri ufficiali né verifica gli obblighi normativi. Prima dell’uso operativo sarà necessario definire i dati aziendali e verificare i requisiti applicabili.
-
-## Prossimi passi
-
-1. Collegare il prototipo a un archivio dati con accesso protetto e backup.
-2. Aggiungere esportazione e report per campagna agraria.
-3. Completare le schede aziendali, appezzamenti, prodotti e movimenti.
-4. Verificare i registri e i flussi richiesti per l’azienda prima di usarli come documentazione ufficiale.
+Questi registri sono strumenti gestionali: non sostituiscono documenti ufficiali e non verificano gli obblighi normativi.
