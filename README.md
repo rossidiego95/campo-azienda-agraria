@@ -24,7 +24,7 @@ Questa versione contiene dati dimostrativi. Appezzamenti, piano colturale e oper
 
 ## Prossimi passi
 
-1. Conservare il codice in un repository GitHub privato.
-2. Sviluppare l’archivio dati e l’accesso con utenti autorizzati.
+1. Collegare il prototipo a un archivio dati con accesso protetto e backup.
+2. Aggiungere esportazione e report per campagna agraria.
 3. Completare le schede aziendali, appezzamenti, prodotti e movimenti.
 4. Verificare i registri e i flussi richiesti per l’azienda prima di usarli come documentazione ufficiale.
