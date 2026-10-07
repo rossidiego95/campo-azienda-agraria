@@ -8,6 +8,9 @@
   const names = { dashboard:'Panoramica', appezzamenti:'Appezzamenti', piano:'Piano colturale', programmazione:'Programmazione operazioni', magazzino:'Magazzino', fitosanitari:'Prodotti fitosanitari', campagna:'Quaderno di campagna', cantina:'Registro di cantina', vendite:'Vendite', prodotti:'Prodotti aziendali', attrezzature:'Attrezzature', richieste:'Richieste materiali', 'cose-da-fare':'Cose da fare', utenti:'Account e ruoli', impostazioni:'Azienda e campagne' };
   const icons = { magazzino:'▤', fitosanitari:'♧', campagna:'▧', cantina:'◉', vendite:'€', prodotti:'◈', attrezzature:'⚙' };
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hideStartup=()=>{const splash=document.getElementById('startup-screen');if(splash){splash.classList.add('is-leaving');setTimeout(()=>splash.remove(),400);}};
+  const startupError=message=>{const splash=document.getElementById('startup-screen');if(!splash)return;splash.classList.add('has-error');splash.querySelector('#startup-caption').textContent=message;splash.querySelector('#startup-retry').hidden=false;};
+  document.getElementById('startup-retry')?.addEventListener('click',()=>location.reload());
   const errText = error => error?.message || 'Si è verificato un errore. Riprova.';
   const area = value => Number(value || 0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:4});
   const money = value => Number(value || 0).toLocaleString('it-IT',{style:'currency',currency:'EUR'});
@@ -56,8 +59,8 @@
   }
   async function start(user){
     state.user=user;
-    try{await ensureCompanyAndSeason();renderNavigation();updateHeader();await go(['owner','referente'].includes(state.role)?'dashboard':state.role==='richiedente'?'richieste':'cose-da-fare');}
-    catch(error){notify('Problema nel caricamento: '+errText(error));}
+    try{await ensureCompanyAndSeason();renderNavigation();updateHeader();await go(['owner','referente'].includes(state.role)?'dashboard':state.role==='richiedente'?'richieste':'cose-da-fare');hideStartup();}
+    catch(error){startupError('Non siamo riusciti a caricare i dati. Controlla la connessione e riprova.');notify('Problema nel caricamento: '+errText(error));}
   }
   function updateHeader(){
     const company=state.company?.name||'Azienda agricola';const season=state.season?.label||'—';
@@ -259,5 +262,6 @@
   const settingsButton=document.createElement('button');settingsButton.dataset.page='impostazioni';settingsButton.innerHTML='<span class="ico">⚙</span>Azienda e campagne';document.getElementById('nav').appendChild(settingsButton);
   document.getElementById('save').onclick=()=>notify('Apri il registro desiderato e scegli “Nuova registrazione”.');
   ensureCover();
-  if(configured)client.auth.getSession().then(({data,error})=>{if(error){document.getElementById('auth-error').textContent=errText(error);return}if(data.session){document.getElementById('auth-cover')?.remove();start(data.session.user);}});
+  if(configured)client.auth.getSession().then(({data,error})=>{if(error){document.getElementById('auth-error').textContent=errText(error);startupError('Impossibile verificare l’accesso. Controlla la connessione e riprova.');return}if(data.session){document.getElementById('auth-cover')?.remove();start(data.session.user);}else hideStartup();});
+  else hideStartup();
 })();
