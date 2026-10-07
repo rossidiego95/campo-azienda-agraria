@@ -2,25 +2,23 @@
 
 App web in italiano per organizzare appezzamenti, piano colturale, operazioni in campo, magazzino, prodotti fitosanitari, quaderno di campagna, registro di cantina, vendite, prodotti aziendali, attrezzature, richieste materiali e attività del personale.
 
-## Accesso con username
+## Accesso con email
 
-Gli account invitati accedono con **username e password**, senza usare un indirizzo email. Suggerisci lo username nel formato `nome.cognome`. L’account iniziale del titolare mantiene come username la parte prima della @ dell’indirizzo usato quando è stato creato l’account (in minuscolo).
+Gli account invitati accedono con **email e password**. Il titolare o un referente apre **Account e ruoli**, crea un invito e condivide il link personale con il collega. Chi riceve il link sceglie l’email e la password del proprio account. Gli inviti scadono dopo 14 giorni.
 
-Un titolare o referente apre **Account e ruoli**, sceglie il tipo di account e inserisce l’email a cui spedire l’invito. Si apre il programma di posta con un link personale; se non inserisci l’email, il link viene copiato e puoi inviarlo tu. Il collega usa il link una sola volta, sceglie username e password, e riceve automaticamente il ruolo dell’invito. Gli inviti scadono dopo 14 giorni. Gli indirizzi destinatari non sono salvati nel database.
+I ruoli disponibili sono:
 
-Ruoli disponibili:
-
-- **Educatrice / docente di sostegno:** invia richieste materiali, controlla l’esito e scarica la ricevuta PDF quando approvata.
-- **Docente ITP:** vede le cose da fare e registra le attività svolte.
+- **Educatrice / docente di sostegno:** invia richieste materiali, controlla l’esito, e può aggiungere attività da svolgere e registrare quelle svolte nella pagina **Cose da fare**.
+- **Docente ITP:** consulta le attività, ne può aggiungere di nuove e registra quelle svolte nella stessa pagina.
 - **Referente di sede:** gestisce tutte le sezioni, come il titolare.
 
-I permessi sono applicati anche nel database, oltre che nei menu dell’app.
+Il titolare e i referenti vedono le attività inserite da tutto il personale. I permessi sono applicati anche nel database, oltre che nei menu dell’app.
 
 ## Database e configurazione
 
 I dati sono archiviati nel progetto Supabase collegato all’app. La chiave publishable in `supabase-config.js` è pubblica e non è una chiave segreta. Non pubblicare mai la chiave service-role.
 
-Per aggiornare il database già esistente, esegui una sola volta `database/migrations/003_staff_access_requests_tasks.sql` nel SQL Editor Supabase, dopo le migrazioni 001 e 002. Questa migrazione aggiunge i ruoli e le regole di accesso, le richieste, le attività e gli inviti. Non cancellare o ricreare le tabelle esistenti.
+Per aggiornare un database esistente, esegui nel SQL Editor Supabase le migrazioni numerate non ancora applicate, in ordine. La migrazione `005_staff_tasks.sql` estende l’accesso alle attività per ITP ed educatori/docenti di sostegno; `004_fix_invite_code_generation.sql` corregge la generazione dei link d’invito. Non cancellare o ricreare le tabelle esistenti.
 
 Il sorgente della funzione Edge `staff-auth` è `staff-auth.ts` nella cartella principale. Nel pannello Supabase crea una Edge Function con questo nome, incolla il file come `index.ts`, disattiva “Verify JWT” (è una schermata di accesso pubblica) e distribuiscila. Non inserire chiavi segrete nel file o nell’app browser: la funzione usa le variabili server Supabase.
 

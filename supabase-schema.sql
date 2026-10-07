@@ -329,7 +329,7 @@ create table public.material_requests (
 create table public.work_tasks (
  id uuid primary key default gen_random_uuid(), company_id uuid not null references public.companies(id) on delete cascade,
  title text not null, description text, due_date date, status text not null default 'Da fare' check (status in ('Da fare','Completata')),
- created_by uuid not null references auth.users(id), created_at timestamptz not null default now(), completed_at timestamptz
+ created_by uuid not null references auth.users(id), created_by_name text not null default 'Referente', created_at timestamptz not null default now(), completed_at timestamptz
 );
 create table public.work_logs (
  id uuid primary key default gen_random_uuid(), company_id uuid not null references public.companies(id) on delete cascade,
@@ -341,6 +341,19 @@ create index company_members_user_idx on public.company_members(user_id,company_
 create index material_requests_company_status_idx on public.material_requests(company_id,status,created_at desc);
 create index work_tasks_company_status_idx on public.work_tasks(company_id,status,due_date);
 create index work_logs_company_date_idx on public.work_logs(company_id,activity_date desc);
+
+create or replace function private.set_work_task_creator_name()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+ select m.username into new.created_by_name
+ from public.company_members m
+ where m.company_id=new.company_id and m.user_id=new.created_by;
+ if new.created_by_name is null then new.created_by_name:='Personale'; end if;
+ return new;
+end; $$;
+revoke all on function private.set_work_task_creator_name() from public,anon,authenticated;
+create trigger work_tasks_set_creator_name before insert on public.work_tasks
+ for each row execute function private.set_work_task_creator_name();
 
 insert into public.company_members(company_id,user_id,username,role)
 select c.id,c.owner_id,regexp_replace(lower(split_part(u.email,'@',1)),'[^a-z0-9._-]','-','g'),'owner' from public.companies c join auth.users u on u.id=c.owner_id
@@ -366,7 +379,7 @@ create trigger companies_add_owner_member after insert on public.companies for e
 
 create or replace function public.create_company_invite(p_company_id uuid,p_role text)
 returns table(invite_code text,role text,expires_at timestamptz) language plpgsql security definer set search_path = '' as $$
-declare v_code text:=encode(gen_random_bytes(18),'hex'); v_expiry timestamptz:=now()+interval '14 days';
+declare v_code text:=pg_catalog.replace(pg_catalog.gen_random_uuid()::text,'-',''); v_expiry timestamptz:=pg_catalog.now()+interval '14 days';
 begin
  if not private.has_company_role(p_company_id,array['owner','referente']) then raise exception 'Non autorizzato'; end if;
  if p_role not in ('referente','richiedente','itp') then raise exception 'Ruolo non valido'; end if;
@@ -444,13 +457,15 @@ create policy "admins review material requests" on public.material_requests for 
 create policy "admins remove material requests" on public.material_requests for delete to authenticated
  using(private.has_company_role(company_id,array['owner','referente']));
 
-create policy "staff read tasks" on public.work_tasks for select to authenticated using(private.has_company_role(company_id,array['owner','referente','itp']));
+create policy "staff read tasks" on public.work_tasks for select to authenticated using(private.has_company_role(company_id,array['owner','referente','itp','richiedente']));
 create policy "admins manage tasks" on public.work_tasks for all to authenticated
  using(private.has_company_role(company_id,array['owner','referente'])) with check(private.has_company_role(company_id,array['owner','referente']));
+create policy "staff create tasks" on public.work_tasks for insert to authenticated
+ with check(created_by=(select auth.uid()) and status='Da fare' and private.has_company_role(company_id,array['itp','richiedente']));
 create policy "admins and author read work logs" on public.work_logs for select to authenticated
- using((staff_id=(select auth.uid()) and private.has_company_role(company_id,array['itp'])) or private.has_company_role(company_id,array['owner','referente']));
-create policy "itp records own work" on public.work_logs for insert to authenticated
- with check(staff_id=(select auth.uid()) and private.has_company_role(company_id,array['itp'])
+ using((staff_id=(select auth.uid()) and private.has_company_role(company_id,array['itp','richiedente'])) or private.has_company_role(company_id,array['owner','referente']));
+create policy "staff records own work" on public.work_logs for insert to authenticated
+ with check(staff_id=(select auth.uid()) and private.has_company_role(company_id,array['itp','richiedente'])
  and (task_id is null or exists(select 1 from public.work_tasks t where t.id=task_id and t.company_id=work_logs.company_id)));
 create policy "admins manage work logs" on public.work_logs for all to authenticated
  using(private.has_company_role(company_id,array['owner','referente'])) with check(private.has_company_role(company_id,array['owner','referente']));
